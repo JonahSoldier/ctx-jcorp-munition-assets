@@ -261,7 +261,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_loud.wav"
+	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop.wav"
 })
 
 sound.Add({
@@ -270,7 +270,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_aim_loud.wav"
+	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_aim.wav"
 })
 
 sound.Add({
@@ -279,7 +279,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_end_loud.wav"
+	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_end.wav"
 })
 
 
