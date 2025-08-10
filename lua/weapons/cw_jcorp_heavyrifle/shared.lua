@@ -7,10 +7,10 @@ SWEP.Base = "simple_base_scoped"
 
 SWEP.RenderGroup = RENDERGROUP_BOTH
 
-SWEP.PrintName = "Assault Rifle"
+SWEP.PrintName = "Heavy Rifle"
 SWEP.Category = "JSMC Dedicated Equipments Division"
 
-SWEP.JCMS_COSTOVERRIDE = 380*4
+SWEP.JCMS_COSTOVERRIDE = 550*4
 
 SWEP.Slot = 2
 
@@ -18,45 +18,47 @@ SWEP.Spawnable = true
 
 SWEP.UseHands = true
 
-SWEP.ViewModelTargetFOV = 54
+SWEP.ViewModelTargetFOV = 60
 
-SWEP.ViewModel = Model("models/weapons/cstrike/c_rif_galil.mdl")
+SWEP.ViewModel = Model("models/weapons/cstrike/c_mach_m249para.mdl")
 SWEP.WorldModel = Model("models/weapons/cstrike/w_rif_galil.mdl")
 
-SWEP.HoldType = "smg"
+SWEP.HoldType = "ar2"
 SWEP.LowerHoldType = "passive"
 
 SWEP.Firemode = -1
 
-SWEP.ScopeZoom = 1.3
+SWEP.ScopeZoom = 1.1
 SWEP.ScopeSound = "Simple_Weapons.CombineScope"
 
 SWEP.Secondary.Automatic = false
+-- SWEP.WalkSpeed = 100 -- default is 150
+-- SWEP.RunSpeed = 200
 
 SWEP.Primary = {
 	Ammo = "AR2",
 
-	ClipSize = 45,
+	ClipSize = 50,
 	DefaultClip = 180,
 
 	RangeModifier = 1,
-	Damage = 19,
-	Delay = 60 / 650,
-	Accuracy = 9,
-	Range = 200,
-
+	Damage = 12,
+	Count = 2,
+	Delay = 60 / 700,
+	Accuracy = 20,
+	Range = 600,
 	Recoil = {
 		MinAng = Angle(-0.2, -0.5, 0),
-		MaxAng = Angle(0.8, 0.5, 0),
-		Punch = 0.4,
+		MaxAng = Angle(0.3, 0.5, 0),
+		Punch = 1.0,
 		Ratio = 0.2
 	},
-	Sound = "Simple_Weapons_JCORP_AR1.Loop",
+	Sound = "Simple_Weapons_JCORP_HR1.Loop",
 	
 	
 	
 	Reload = {
-		Time = 2.4
+		Time = 3.5
 	},
 	
 	
@@ -66,6 +68,7 @@ SWEP.Primary = {
 }
 
 SWEP.ViewOffset = Vector(0, 0, 0)
+
 
 local transitions = {
 	-- [ACT_VM_PRIMARYATTACK] = ACT_VM_RELOAD,
@@ -79,11 +82,7 @@ local transitions = {
 }
 
 function SWEP:GetFireSound()
-	if self:GetZoomed() then
-		return "Simple_Weapons_JCORP_AR1.LoopAlt"
-	else
-		return "Simple_Weapons_JCORP_AR1.Loop"
-	end
+		return "Simple_Weapons_JCORP_HR1.Loop"
 end
 
 function SWEP:TranslateWeaponAnim(act)
@@ -110,17 +109,27 @@ function SWEP:Deploy()
 
 	self:SetIsFiring(false)
 	self:SetZoomed(false)
-
-	-- Ensure default stats are set
-	self.Primary.Delay = self.UnscopedStats.Delay
-	self.Primary.Accuracy = self.UnscopedStats.Accuracy
-	self.Primary.Range = self.UnscopedStats.Range
-	-- self.Owner:SetWalkSpeed(200)
-	-- self.Owner:SetRunSpeed(400)
-
+	self.Primary.Recoil = self.UnscopedStats.Recoil
 	return true
 end
 
+SWEP.UnscopedStats = {
+	Recoil = {
+		MinAng = Angle(-0.2, -0.5, 0),
+		MaxAng = Angle(0.3, 0.5, 0),
+		Punch = 1.0,
+		Ratio = 0.2
+	},
+}
+
+SWEP.ScopedStats = {
+	Recoil = {
+		MinAng = Angle(-0.2, -0.2, 0),
+		MaxAng = Angle(0.3, 0.2, 0),
+		Punch = 0.6,
+		Ratio = 0.2
+	},
+}
 
 function SWEP:OwnerChanged()
 	BaseClass.OwnerChanged(self)
@@ -143,6 +152,7 @@ end
 function SWEP:EmitFireSound()
 	local currentSound = self:GetFireSound()
 
+	-- If we're not already firing, play the correct loop
 	if not self:GetIsFiring() then
 		self:EmitSound(currentSound)
 		self:SetIsFiring(true)
@@ -150,43 +160,13 @@ function SWEP:EmitFireSound()
 		return
 	end
 
+	-- Already firing, but zoom state changed — switch loop
 	if self.LastSoundZoomedState ~= self:GetZoomed() then
-		self:StopSound(self.LastSoundZoomedState and "Simple_Weapons_JCORP_AR1.LoopAlt" or "Simple_Weapons_JCORP_AR1.Loop")
 		self:EmitSound(currentSound)
 		self.LastSoundZoomedState = self:GetZoomed()
 	end
 end
 
-
-SWEP.UnscopedStats = {
-	Damage = 19,
-	Delay = 60 / 650,
-	Accuracy = 9,
-	Range = 200,
-
-	Recoil = {
-		MinAng = Angle(-0.2, -0.5, 0),
-		MaxAng = Angle(0.8, 0.5, 0),
-		Punch = 0.4,
-		Ratio = 0.2
-	},
-	Sound = "Simple_Weapons_JCORP_AR1.Loop",
-}
-
-SWEP.ScopedStats = {
-	Damage = 27,
-	Delay = 60 / 430,
-	Accuracy = 4,
-	Range = 600,
-
-	Recoil = {
-		MinAng = Angle(0.3, -0.2, 0),
-		MaxAng = Angle(0.6, 0.2, 0),
-		Punch = 0.4,
-		Ratio = 0.2
-	},
-	Sound = "Simple_Weapons_JCORP_AR1.LoopAlt",
-}
 
 function SWEP:Think()
 	BaseClass.Think(self)
@@ -202,40 +182,30 @@ function SWEP:Think()
 		local wantsZoom = owner:KeyDown(IN_ATTACK2)
 
 		if wantsZoom ~= self:GetZoomed() then
-			self:SetZoomed(wantsZoom)
-
-			if wantsZoom then
-				self.Primary.Damage = self.ScopedStats.Damage
-				self.Primary.Delay = self.ScopedStats.Delay
-				self.Primary.Accuracy = self.ScopedStats.Accuracy
-				self.Primary.Range = self.ScopedStats.Range
-				self.Primary.Recoil = self.ScopedStats.Recoil
-				self.Primary.Sound = self.ScopedStats.Sound
-				-- self.Owner:SetWalkSpeed(180)
-				-- self.Owner:SetRunSpeed(180)
-			else
-				self.Primary.Damage = self.UnscopedStats.Damage
-				self.Primary.Delay = self.UnscopedStats.Delay
-				self.Primary.Accuracy = self.UnscopedStats.Accuracy
-				self.Primary.Range = self.UnscopedStats.Range
-				self.Primary.Recoil = self.UnscopedStats.Recoil
-				self.Primary.Sound = self.UnscopedStats.Sound
-				-- self.Owner:SetWalkSpeed(200)
-				-- self.Owner:SetRunSpeed(400)
-			end
+			self:SetZoomed(wantsZoom)		
 		end
+	
+			if wantsZoom then
+				self.Primary.Recoil = self.ScopedStats.Recoil
+				-- self.Owner:SetWalkSpeed(130)
+				-- self.Owner:SetRunSpeed(130)
+			else
+				self.Primary.Recoil = self.UnscopedStats.Recoil
+				-- self.Owner:SetWalkSpeed(180)
+				-- self.Owner:SetRunSpeed(280)
+			end
 		
-	end
 
-	if self:GetIsFiring() and CurTime() > self:GetNextFire() + engine.TickInterval() then			
+	-- Stop firing sound if needed
+	if self:GetIsFiring() and CurTime() > self:GetNextFire() + engine.TickInterval() then	
 				if IsValid(self) then
-					self:EmitSound("Simple_Weapons_JCORP_AR1.LoopEnd")
-					self:StopSound(self.Primary.Sound)
 					self:SetIsFiring(false)
-					self:SetNextFire(CurTime() + 0.03)
+					self:EmitSound("Simple_Weapons_JCORP_HR1.End")
+					self:SetNextFire(CurTime() + 0.7)
 				end
 			-- end)
 	end
+end
 end
 
 function SWEP:DoImpactEffect(tr, dmgtype)
@@ -245,7 +215,6 @@ function SWEP:DoImpactEffect(tr, dmgtype)
 			-- self:DoAR2Impact(tr) 
 		end
 end
-
 
 function SWEP:SecondaryAttack()
 	if CLIENT or not IsFirstTimePredicted() then return end
@@ -308,7 +277,7 @@ function SWEP:StartReload()
 
     local vm = self:GetOwner():GetViewModel()
     if IsValid(vm) then
-        vm:SetPlaybackRate(1.25)
+        vm:SetPlaybackRate(1.5)
     end
 
     local duration = self:GetReloadTime()
@@ -319,29 +288,23 @@ end
 
 
 
-sound.Add({
-	name = "Simple_Weapons_JCORP_AR1.Loop",
-	channel = CHAN_WEAPON,
-	volume = 1,
-	level = 130,
-	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop.wav"
-})
 
 sound.Add({
-	name = "Simple_Weapons_JCORP_AR1.LoopAlt",
+	name = "Simple_Weapons_JCORP_HR1.Loop",
 	channel = CHAN_WEAPON,
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_aim.wav"
+	sound = "weapons/ctx_jcorp_heavyrifle/fire_loop.wav"
 })
 
+
+
 sound.Add({
-	name = "Simple_Weapons_JCORP_AR1.LoopEnd",
+	name = "Simple_Weapons_JCORP_HR1.End",
 	channel = CHAN_WEAPON,
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_assaultrifle/fire_loop_end.wav"
+	sound = "weapons/ctx_jcorp_heavyrifle/fire_end.wav"
 })

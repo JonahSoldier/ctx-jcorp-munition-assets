@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\\jma_boltpistol\winchester"
+      	"$bumpmap" "models\weapons\\jma_boltpistol\winchester_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+}
