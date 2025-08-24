@@ -19,7 +19,7 @@ SWEP.UseHands = true
 
 SWEP.ViewModelTargetFOV = 54
 
-SWEP.ViewModel = Model("models/weapons/cstrike/c_shot_xm1014.mdl")
+SWEP.ViewModel = Model("models/weapons/cstrike/c_shot_m3super90.mdl")
 SWEP.WorldModel = Model("models/weapons/cstrike/w_smg_ump45.mdl")
 
 SWEP.HoldType = "ar2"
@@ -60,7 +60,7 @@ SWEP.Primary = {
 	-- TracerName = "LaserTracer"
 }
 
-SWEP.ViewOffset = Vector(0, 0, 0)
+SWEP.ViewOffset = Vector(-1, 3, 0)
 
 SWEP.NPCData = {
 	Burst = {10, 25},
@@ -237,7 +237,7 @@ function SWEP:PrimaryAttack()
     if SERVER then
         local owner = self:GetOwner()
         local aimVec = owner:GetAimVector()
-        local srcPos = owner:GetShootPos() + aimVec * 30 + owner:GetRight() * 6 + owner:GetUp() * -3
+        local srcPos = owner:GetShootPos() + aimVec * 30 + owner:GetRight() * 2 + owner:GetUp() * -3
 
 
         local rocket = ents.Create("ent_torguelike")

@@ -10,7 +10,7 @@ SWEP.RenderGroup = RENDERGROUP_BOTH
 SWEP.PrintName = "Shotgun"
 SWEP.Category = "JSMC Dedicated Equipments Division"
 
-SWEP.JCMS_COSTOVERRIDE = 280*4
+SWEP.JCMS_COSTOVERRIDE = 260*4
 
 SWEP.Slot = 2
 
@@ -41,11 +41,11 @@ SWEP.Primary = {
 	DefaultClip = 26,
 
 	RangeModifier = 1,
-	Damage = 12,
-	Delay = 60 / 120,
+	Damage = 18,
+	Delay = 60 / 160,
 	Accuracy = 9,
 	Range = 225,
-	Count = 5,
+	Count = 6,
 
 	Recoil = {
 		MinAng = Angle(-0.1, -0.5, 0),

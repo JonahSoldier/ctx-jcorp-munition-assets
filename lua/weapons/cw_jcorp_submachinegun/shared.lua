@@ -18,8 +18,8 @@ SWEP.UseHands = true
 
 SWEP.ViewModelTargetFOV = 54
 
-SWEP.ViewModel = Model("models/weapons/cstrike/c_pist_glock18.mdl")
-SWEP.WorldModel = Model("models/weapons/cstrike/w_smg_ump45.mdl")
+SWEP.ViewModel = Model("models/weapons/cstrike/c_smg_mp5.mdl")
+SWEP.WorldModel = Model("models/weapons/cstrike/w_smg_mp5.mdl")
 
 SWEP.HoldType = "smg"
 SWEP.LowerHoldType = "passive"
@@ -32,7 +32,7 @@ SWEP.ScopeSound = "Simple_Weapons.CombineScope"
 SWEP.Secondary.Automatic = true
 
 SWEP.Primary = {
-	Ammo = "AR2",
+	Ammo = "SMG1",
 
 	ClipSize = 25,
 	DefaultClip = 180,
@@ -40,14 +40,18 @@ SWEP.Primary = {
 	RangeModifier = 1,
 	Damage = 17,
 	Delay = 60 / 800,
-	Accuracy = 9,
-	Range = 90,
+	Accuracy = 7,
+	Range = 180,
 
 	Recoil = {
 		MinAng = Angle(-0.1, -0.5, 0),
 		MaxAng = Angle(0.7, 0.5, 0),
-		Punch = 1.5,
+		Punch = 0.5,
 		Ratio = 0.2
+	},
+	
+	Reload = {
+		Time = 1.2
 	},
 	Sound = "Simple_Weapons_JCORP_SMG.Loop",
 	
@@ -234,4 +238,29 @@ function SWEP:Holster()
     end)
 
     return BaseClass.Holster(self)
+end
+
+function SWEP:StartReload()
+    local reload = self.Primary.Reload
+
+    self:GetOwner():SetAnimation(PLAYER_RELOAD)
+
+    if reload.Shotgun then
+        self:SendTranslatedWeaponAnim(ACT_SHOTGUN_RELOAD_START)
+        self:SetFirstReload(true)
+    else
+        self:SendTranslatedWeaponAnim(ACT_VM_RELOAD)
+        self:EmitReloadSound()
+    end
+
+    -- 🟡 Set playback speed
+    local vm = self:GetOwner():GetViewModel()
+    if IsValid(vm) then
+        vm:SetPlaybackRate(1.5) -- 1.5x faster
+    end
+
+    local duration = self:GetReloadTime()
+
+    self:SetFinishReload(CurTime() + duration)
+    self:SetNextIdle(CurTime() + duration)
 end

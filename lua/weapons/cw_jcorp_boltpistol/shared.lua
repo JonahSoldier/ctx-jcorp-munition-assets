@@ -19,15 +19,16 @@ SWEP.Spawnable = true
 SWEP.UseHands = true
 
 
-SWEP.ViewModel = Model("models/weapons/jma/a/jma_boltpistol.mdl")
+SWEP.ViewModel = Model("models/weapons/jma/jma_boltpistol.mdl")
 SWEP.WorldModel = Model("models/weapons/cstrike/w_smg_ump45.mdl")
 
 SWEP.HoldType = "pistol"
 SWEP.LowerHoldType = "passive"
 
 SWEP.Firemode = -1
+SWEP.m_WeaponDeploySpeed = 1
 
-SWEP.ScopeZoom = 1.2
+SWEP.ScopeZoom = 1.05
 SWEP.ScopeSound = "Simple_Weapons.CombineScope"
 
 SWEP.Secondary.Automatic = true
@@ -41,10 +42,10 @@ SWEP.Primary = {
 	DefaultClip = 24,
 
 	RangeModifier = 1,
-	Damage = 65,
-	Delay = 1.2,
-	Accuracy = 3,
-	Range = 130,
+	Damage = 120,
+	Delay = 1.07,
+	Accuracy = 1,
+	Range = 285,
 
 	Recoil = {
 		MinAng = Angle(2.5, -0.5, 0),
@@ -68,17 +69,18 @@ SWEP.Primary = {
 -- SWEP.Delay = 1
 
 SWEP.UnscopedStats = {
-	Delay = 1.2,
-	Range = 130,
+	Delay = 1.07,
+	Range = 285,
 }
 
 SWEP.ScopedStats = {
-	Delay = 0.45,
-	Range = 100,
+	Delay = 0.4,
+	Range = 50,
 }
 
 SWEP.ViewModelTargetFOV = 90
-SWEP.ViewOffset = Vector(0, 0, 0)
+SWEP.ViewModelFOV = 75
+SWEP.ViewOffset = Vector(-2, 0, 0)
 
 list.Add("NPCUsableWeapons", {class = "simple_hl2e_ar3", title = "Simple Weapons: " .. SWEP.PrintName})
 
@@ -96,11 +98,10 @@ function SWEP:Deploy()
 	self:SetZoomed(false)
 	self.Primary.Delay = self.UnscopedStats.Delay
 	self.Primary.Range = self.UnscopedStats.Range
-
+	self:SetNextIdle(CurTime() + 0.2)
+	self:SetNextFire(CurTime() + 0.2)
 	return true
 end
-
-
 function SWEP:OwnerChanged()
 	BaseClass.OwnerChanged(self)
 
@@ -254,41 +255,50 @@ sound.Add({
 	channel = CHAN_WEAPON,
 	volume = 1,
 	level = 130,
-	pitch = {95, 105},
-	sound = "weapons/ctx_jcorp_boltpistol/fire.wav"
+	pitch = {100, 100},
+	sound = {
+	"weapons/ctx_jcorp_boltpistol/fire_01.wav",
+	"weapons/ctx_jcorp_boltpistol/fire_02.wav",
+	"weapons/ctx_jcorp_boltpistol/fire_03.wav",
+	"weapons/ctx_jcorp_boltpistol/fire_04.wav",
+	}
+	-- sound = {
+	-- "weapons/ctx_jcorp_boltpistol/fire.wav",
+	-- }
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Lever",
-	channel = CHAN_STATIC,
+	channel = CHAN_ITEM,
 	volume = {0.5, 0.5},
-	level = 130,
+	level = 80,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_boltpistol/firebolt.wav"
+	sound = "weapons/ctx_jcorp_boltpistol/bolt_regular.wav"
+	-- sound = "weapons/ctx_jcorp_boltpistol/firebolt.wav"
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.LeverFast",
-	channel = CHAN_STATIC,
+	channel = CHAN_ITEM,
 	volume = {0.5, 0.5},
-	level = 130,
-	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_boltpistol/firebolt_fast.wav"
+	level = 80,
+	pitch = {95, 105},
+	sound = "weapons/ctx_jcorp_boltpistol/bolt_fast.wav"
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Draw",
-	channel = CHAN_STATIC,
-	volume = {0.5, 0.5},
-	level = 130,
+	channel = CHAN_ITEM,
+	volume = {0.8, 0.8},
+	level = 80,
 	pitch = {100, 100},
 	sound = "weapons/ctx_jcorp_boltpistol/draw.wav"
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Aim",
-	channel = CHAN_STATIC,
-	volume = {0.3, 0.3},
+	channel = CHAN_ITEM,
+	volume = {0.4, 0.4},
 	level = 80,
 	pitch = {100, 100},
 	sound = "weapons/ctx_jcorp_boltpistol/aim.wav"
@@ -296,8 +306,8 @@ sound.Add({
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.AimOut",
-	channel = CHAN_STATIC,
-	volume = {0.2, 0.2},
+	channel = CHAN_ITEM,
+	volume = {0.4, 0.4},
 	level = 80,
 	pitch = {70, 70},
 	sound = "weapons/ctx_jcorp_boltpistol/aim.wav"
@@ -305,27 +315,27 @@ sound.Add({
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Magout",
-	channel = CHAN_STATIC,
-	volume = {0.5, 0.5},
-	level = 130,
-	pitch = {100, 100},
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 120},
 	sound = "weapons/ctx_jcorp_boltpistol/reload_magout.wav"
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Magin",
-	channel = CHAN_STATIC,
-	volume = {0.5, 0.5},
-	level = 130,
-	pitch = {100, 100},
+	channel = CHAN_ITEM,
+	volume = 1,
+	level = 80,
+	pitch = {95, 105},
 	sound = "weapons/ctx_jcorp_boltpistol/reload_magin.wav"
 })
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_BOLTPISTOL.Bolt",
-	channel = CHAN_STATIC,
-	volume = {0.5, 0.5},
-	level = 130,
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
 	pitch = {100, 100},
 	sound = "weapons/ctx_jcorp_boltpistol/reload_bolt.wav"
 })

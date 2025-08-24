@@ -1,5 +1,14 @@
 AddCSLuaFile()
 
+hook.Add( "SetupMove", "ReduceSpeedOverride", function( ply, mv, cmd )
+  local wep = ply:GetActiveWeapon()
+  if not IsValid(wep) or not wep.speedMultiplier then return end
+
+  local mul = wep.speedMultiplier
+  mv:SetForwardSpeed(mv:GetForwardSpeed() * mul)
+  mv:SetSideSpeed(mv:GetSideSpeed() * mul)
+
+end )
 
 DEFINE_BASECLASS("simple_base_scoped")
 
@@ -10,7 +19,7 @@ SWEP.RenderGroup = RENDERGROUP_BOTH
 SWEP.PrintName = "Light Machine Gun"
 SWEP.Category = "JSMC Dedicated Equipments Division"
 
-SWEP.JCMS_COSTOVERRIDE = 550*4
+SWEP.JCMS_COSTOVERRIDE = 380*4
 
 SWEP.Slot = 2
 
@@ -18,17 +27,16 @@ SWEP.Spawnable = true
 
 SWEP.UseHands = true
 
-SWEP.ViewModelTargetFOV = 60
 
-SWEP.ViewModel = Model("models/weapons/v_mg42.mdl")
+SWEP.ViewModel = Model("models/weapons/jma/jma_lightmachinegun.mdl")
 SWEP.WorldModel = Model("models/weapons/w_mg42bd.mdl")
 
-SWEP.HoldType = "ar2"
+SWEP.HoldType = "smg"
 SWEP.LowerHoldType = "passive"
 
 SWEP.Firemode = -1
 
-SWEP.ScopeZoom = 1.1
+SWEP.ScopeZoom = 1.05
 -- SWEP.ScopeSound = "Simple_Weapons.CombineScope"
 
 SWEP.Secondary.Automatic = false
@@ -36,19 +44,20 @@ SWEP.Secondary.Automatic = false
 -- SWEP.RunSpeed = 200
 SWEP.Aiming = false
 SWEP.AimReleasedTime = 0
-SWEP.AimReleaseDelay = 0.5
+SWEP.AimReleaseDelay = 0.8
 
 SWEP.Primary = {
 	Ammo = "AR2",
 
 	ClipSize = -1,
-	DefaultClip = 200,
+	DefaultClip = 100,
 
 	RangeModifier = 1,
-	Damage = 13,
+	Damage = 18,
 	Count = 2,
 	-- Delay = 60 / 1000,
-	Delay = 0.07,
+	Delay = 0.09,
+	Cost = 1,
 	Accuracy = 20,
 	Range = 400,
 	Recoil = {
@@ -57,12 +66,17 @@ SWEP.Primary = {
 		Punch = 1.0,
 		Ratio = 0.2
 	},
-	Sound = "Simple_Weapons_JCORP_LMG1.Loop",
+	-- Sound = "Simple_Weapons_JCORP_LMG1.Loop",
+	Sound = "Simple_Weapons_JCORP_HR1.Loop",
 	
 	
 	
 	Reload = {
 		Time = 3.5
+	},
+	
+	Deploy = {
+		Time = 1
 	},
 	
 	
@@ -71,7 +85,9 @@ SWEP.Primary = {
 	-- TracerName = "LaserTracer"
 }
 
-SWEP.ViewOffset = Vector(-5, -1, -2)
+SWEP.ViewModelTargetFOV = 90
+SWEP.ViewModelFOV = 70
+SWEP.ViewOffset = Vector(7, -2, 0)
 
 
 local transitions = {
@@ -87,6 +103,7 @@ local transitions = {
 
 function SWEP:GetFireSound()
 		return "Simple_Weapons_JCORP_LMG1.Loop"
+		-- return "Simple_Weapons_JCORP_HR1.Loop"
 end
 
 function SWEP:TranslateWeaponAnim(act)
@@ -125,7 +142,7 @@ SWEP.UnscopedStats = {
 		Ratio = -0.4
 	},
 	Range = 400,
-	Accuracy = 5,
+	Accuracy = 18,
 }
 
 SWEP.ScopedStats = {
@@ -136,7 +153,7 @@ SWEP.ScopedStats = {
 		Ratio = 0.2
 	},
 	Range = 1000,
-	Accuracy = 20,
+	Accuracy = 10,
 }
 
 function SWEP:OwnerChanged()
@@ -160,7 +177,7 @@ end
 function SWEP:EmitFireSound()
 	local currentSound = self:GetFireSound()
 	
-		self:EmitSound("Simple_Weapons_JCORP_LMG1.Sweetener2")
+		-- self:EmitSound("Simple_Weapons_JCORP_LMG1.Sweetener2")
 		-- self:EmitSound("Simple_Weapons_JCORP_LMG1.Sweetener2")
 
 	-- If we're not already firing, play the correct loop
@@ -178,14 +195,25 @@ function SWEP:EmitFireSound()
 		self.LastSoundZoomedState = self:GetZoomed()
 	end
 	
-		self:EmitSound("Simple_Weapons_JCORP_LMG1.Sweetener")
+		-- self:EmitSound("Simple_Weapons_JCORP_LMG1.Sweetener")
 end
 
 
 function SWEP:Think()
 	BaseClass.Think(self)
 	
+    -- if wantsZoom and not self.Aiming then
+        -- self.Aiming = true
+        -- self:SetZoomed(true)
+        -- self:PlayAimAnimation(true)
+    -- elseif not wantsZoom and self.Aiming then
+        -- self.Aiming = false
+        -- self:SetZoomed(false)
+        -- self:PlayAimAnimation(false)
+    -- end
+	
     if self.Aiming and not self.Owner:KeyDown(IN_ATTACK2) then
+		self:PlayAimAnimation(aiming)
         self.Aiming = false
         self.AimReleasedTime = CurTime()
     end
@@ -205,12 +233,14 @@ function SWEP:Think()
 		end
 	
 			if wantsZoom then
+				self.isinaimanim = true
 				self.Primary.Recoil = self.ScopedStats.Recoil
 				self.Primary.Range = self.ScopedStats.Range
 				self.Primary.Accuracy = self.ScopedStats.Accuracy
 				-- self.Owner:SetWalkSpeed(130)
 				-- self.Owner:SetRunSpeed(130)
 			else
+				self.isinaimanim = false
 				self.Primary.Recoil = self.UnscopedStats.Recoil
 				self.Primary.Range = self.UnscopedStats.Range
 				self.Primary.Accuracy = self.UnscopedStats.Accuracy
@@ -224,12 +254,37 @@ function SWEP:Think()
 				if IsValid(self) then
 					self:SetIsFiring(false)
 					self:EmitSound("Simple_Weapons_JCORP_LMG1.End")
+					-- self:EmitSound("Simple_Weapons_JCORP_HR1.End")
 					self:SetNextFire(CurTime() + 0.1)
 				end
 			-- end)
 	end
 end
 end
+
+
+function SWEP:PlayAimAnimation(Aiming)
+    if CLIENT then return end
+
+
+	-- if self:GetNextFire() > CurTime() or not self:CanPrimaryFire() then	return end
+    local vm = self:GetOwner():GetViewModel()
+    if not IsValid(vm) then return end
+
+        vm:SendViewModelMatchingSequence(vm:LookupSequence("aimtoidle"))
+end
+function SWEP:Leaveanim(Aiming)
+    if CLIENT then return end
+
+
+	-- if self:GetNextFire() > CurTime() or not self:CanPrimaryFire() then	return end
+    local vm = self:GetOwner():GetViewModel()
+    if not IsValid(vm) then return end
+
+        vm:SendViewModelMatchingSequence(vm:LookupSequence("idletoaim"))
+end
+
+
 
 function SWEP:DoImpactEffect(tr, dmgtype)
 			self:DoAR2Impact(tr) 
@@ -238,11 +293,23 @@ end
 function SWEP:PrimaryAttack()
 	local ply = self:GetOwner()
 
+    local aiming = self:GetZoomed()
+    local vm = self:GetViewModel()
+
 	if self:GetNextFire() > CurTime() or not self:CanPrimaryFire() then	return end
 	
     if CurTime() < self.AimReleasedTime + self.AimReleaseDelay then return end
+	
 
 	self:PrimaryFire()
+	
+	    if IsValid(vm) then
+        if aiming then    
+            vm:SendViewModelMatchingSequence(vm:LookupSequence("aimfire"))
+        else    
+            vm:SendViewModelMatchingSequence(vm:LookupSequence("fire1"))
+        end
+    end
 end
 
 function SWEP:SecondaryAttack()
@@ -255,8 +322,10 @@ function SWEP:SecondaryAttack()
 	end
 
 	self:SetZoomed(true)
-	self:SetNextFire(CurTime() + 0.5)
+	
+	self:SetNextFire(CurTime() + 1)
 	self.Aiming = true
+	self:Leaveanim(Aiming)
 end
 
 function SWEP:AltFire()
@@ -280,10 +349,10 @@ if CLIENT then
 
 	function SWEP:AdjustMouseSensitivity()
 		if self:GetZoomed() then
-			return 1 / self.ScopeZoom
+			return 1 / self.ScopeZoom * 0.3
 		end
 
-		return nil -- default sensitivity
+		return nil
 	end
 end
 
@@ -299,32 +368,6 @@ function SWEP:Holster()
     return BaseClass.Holster(self)
 end
 
-function SWEP:StartReload()
-    local reload = self.Primary.Reload
-
-    self:GetOwner():SetAnimation(PLAYER_RELOAD)
-
-    if reload.Shotgun then
-        self:SendTranslatedWeaponAnim(ACT_SHOTGUN_RELOAD_START)
-        self:SetFirstReload(true)
-    else
-        self:SendTranslatedWeaponAnim(ACT_VM_RELOAD)
-        self:EmitReloadSound()
-    end
-
-    local vm = self:GetOwner():GetViewModel()
-    if IsValid(vm) then
-        vm:SetPlaybackRate(1.5)
-    end
-
-    local duration = self:GetReloadTime()
-
-    self:SetFinishReload(CurTime() + duration)
-    self:SetNextIdle(CurTime() + duration)
-end
-
-
-
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_LMG1.Loop",
@@ -332,7 +375,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = 100,
-	sound = "weapons/ctx_jcorp_lightmachinegun/fire_loopsound.wav"
+	sound = "weapons/ctx_jcorp_lightmachinegun/fire2.wav"
 })
 
 
@@ -343,7 +386,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {110, 130},
-	sound = "weapons/ctx_jcorp_lightmachinegun/fire_end.wav"
+	sound = "weapons/ctx_jcorp_lightmachinegun/fire-2end.wav"
 })
 
 
@@ -362,7 +405,7 @@ sound.Add({
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_LMG1.Sweetener2",
-	channel = CHAN_STATIC,
+	channel = CHAN_ITEM,
 	volume = {0.5, 0.5},
 	level = 130,
 	pitch = {100, 100},
@@ -373,12 +416,67 @@ sound.Add({
 
 sound.Add({
 	name = "Simple_Weapons_JCORP_LMG1.LoopBegin",
-	channel = CHAN_STATIC,
-	volume = 1,
+	channel = CHAN_ITEM,
+	volume = 0.6,
 	level = 90,
-	pitch = {100, 100},
+	pitch = {90, 100},
 	sound = {
 	"weapons/ctx_jcorp_lightmachinegun/fire_loopbegin1.wav",
 	"weapons/ctx_jcorp_lightmachinegun/fire_loopbegin2.wav",
 	}
 })
+
+
+sound.Add({
+	name = "Simple_Weapons_JCORP_LIGHTMACHINEGUN.ChainIn",
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 100},
+	sound = "weapons/ctx_jcorp_lightmachinegun/chaininn.wav"
+})
+
+
+
+sound.Add({
+	name = "Simple_Weapons_JCORP_LIGHTMACHINEGUN.Close",
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 100},
+	sound = "weapons/ctx_jcorp_lightmachinegun/closen.wav"
+})
+
+
+
+sound.Add({
+	name = "Simple_Weapons_JCORP_LIGHTMACHINEGUN.Bolt",
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 100},
+	sound = "weapons/ctx_jcorp_lightmachinegun/boltn.wav"
+})
+
+
+
+sound.Add({
+	name = "Simple_Weapons_JCORP_LIGHTMACHINEGUN.Bipoddown",
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 100},
+	sound = "weapons/ctx_jcorp_lightmachinegun/bipoddown.wav"
+})
+
+
+
+sound.Add({
+	name = "Simple_Weapons_JCORP_LIGHTMACHINEGUN.Bipodup",
+	channel = CHAN_ITEM,
+	volume = .8,
+	level = 80,
+	pitch = {100, 100},
+	sound = "weapons/ctx_jcorp_lightmachinegun/bipodupp.wav"
+})
+

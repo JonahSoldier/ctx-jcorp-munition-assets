@@ -10,7 +10,7 @@ SWEP.RenderGroup = RENDERGROUP_BOTH
 SWEP.PrintName = "Assault Rifle"
 SWEP.Category = "JSMC Dedicated Equipments Division"
 
-SWEP.JCMS_COSTOVERRIDE = 380*4
+SWEP.JCMS_COSTOVERRIDE = 280*4
 
 SWEP.Slot = 2
 

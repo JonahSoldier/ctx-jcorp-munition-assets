@@ -49,8 +49,9 @@ function ENT:Touch(ent)
     local dmginfo = DamageInfo()
     dmginfo:SetAttacker(IsValid(owner) and owner or self)
     dmginfo:SetInflictor(self)
+    -- dmginfo:SetDamageType(DMG_BURN)
+    dmginfo:SetDamageType(DMG_BLAST)
     dmginfo:SetDamage(120)
-    dmginfo:SetDamageType(DMG_BURN)
 
     util.BlastDamageInfo(dmginfo, self:GetPos(), 200)
 

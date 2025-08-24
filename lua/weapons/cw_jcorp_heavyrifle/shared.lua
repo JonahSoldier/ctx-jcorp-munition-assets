@@ -36,7 +36,7 @@ SWEP.Secondary.Automatic = false
 -- SWEP.RunSpeed = 200
 
 SWEP.Primary = {
-	Ammo = "AR2",
+	Ammo = "SMG1",
 
 	ClipSize = 50,
 	DefaultClip = 180,
@@ -295,7 +295,7 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_heavyrifle/fire_loop.wav"
+	sound = "^weapons/jcorp_emplacement/jcorp_emplacement_fire.wav"
 })
 
 
@@ -306,5 +306,5 @@ sound.Add({
 	volume = 1,
 	level = 130,
 	pitch = {100, 100},
-	sound = "weapons/ctx_jcorp_heavyrifle/fire_end.wav"
+	sound = "^weapons/jcorp_emplacement/jcorp_emplacement_fire_end.wav"
 })

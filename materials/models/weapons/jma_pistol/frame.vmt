@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	"$baseTexture" "models\weapons\jma_pistol\frame"
+	"$nocull"	"1"
+}
