@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+
+	"$baseTexture"			"models\weapons\jma_arifle\reciever"
+	"$bumpmap"			"models\weapons\jma_arifle\reciever_n"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$nocull" "1"
+}

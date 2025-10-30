@@ -1,0 +1,19 @@
+"Vertexlitgeneric"
+{
+        "$basetexture"  "models/weapons/jma_smg/smg2_Da"
+        "$bumpmap"     "models/weapons/jma_smg/smg2_Normal"
+		"$color2" "[1 1 1]"
+        "$normalmapalphaenvmapmask" "1"
+        "$normalmapalphaphongmask"    "1"
+        "$envmap" "env_cubemap"
+        "$envmaptint" "[.2 .2 .2]"
+ 
+        "$phong"     "1"
+        "$phongboost"   "5"
+        "$phongexponent"     "100"
+        "$phongfresnelranges"      "[1 1.2 2]"
+        "$phongexponenttexture"         "models/weapons/jma_smg/smg2_exp"
+        "$phongalbedotint"              "1"
+        "$halflambert"          "1"
+        "$nocull" "0"
+}

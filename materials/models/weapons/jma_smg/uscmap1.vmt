@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/jma_smg/uscmap1red"
+	"$normalmap" "models/weapons/jma_smg/uscmap1_normal"
+        "$nocull"      "1"
+	
+    "$color2" "[1 1 1]"
+}
